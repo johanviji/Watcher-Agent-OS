@@ -1,0 +1,20 @@
+[
+  {
+    "id": "rule_1",
+    "path": "/home/neerajk/Downloads",
+    "pattern": "*.pdf",
+    "action": "move",
+    "destination": "/home/neerajk/Documents",
+    "recursive": false,
+    "active": true
+  },
+  {
+    "id": "rule_2",
+    "path": "/home/neerajk/Downloads",
+    "pattern": "*.pdf",
+    "action": "move",
+    "destination": "/home/neerajk/Documents",
+    "recursive": false,
+    "active": true
+  }
+]
