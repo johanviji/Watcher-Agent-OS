@@ -4,7 +4,7 @@ This project is part of the **Agentic Shell for Linux** multi-agent system[cite:
 
 ---
 
-## 🏗️ System Architecture & Design
+## System Architecture & Design
 
 The system follows a decoupled, multi-tier agentic architecture:
 1. **Interface Layer (Base Shell REPL):** Accepts plain English user input and routes intent[cite: 2].
@@ -15,7 +15,7 @@ The system follows a decoupled, multi-tier agentic architecture:
 
 ---
 
-## 📁 Project Directory Structure
+##  Project Directory Structure
 
 ```text
 agentic_shell_root/
@@ -35,3 +35,91 @@ agentic_shell_root/
 │
 ├── main.py                # Global entry point / Interface Layer (REPL)[cite: 2]
 └── requirements.txt       # Project dependencies[cite: 6]
+
+Navigate to the project root directory:
+
+Bash
+cd path/to/agentic_shell_root
+Install python3-pip if it is not already installed:
+
+Bash
+sudo apt update && sudo apt install python3-pip -y
+Install required Python packages:
+
+Bash
+pip3 install -r requirements.txt
+
+
+
+
+How to Run the Program
+To run the program with persistent background event monitoring, open two separate terminal windows/tabs inside your project root directory (agentic_shell_root/):
+
+Terminal Window 1: Start the Background Daemon
+In the first terminal window, start the inotify background process:
+
+Bash
+python3 -m agents.directory_watcher.daemon
+Note: On Linux/WSL, this detaches as a background worker. It reads active configurations from rules.json and monitors system events.
+
+Terminal Window 2: Launch the Interactive Agentic Shell
+In the second terminal window, start the main shell interface:
+
+Bash
+python3 main.py
+This launches the interactive prompt (shell@agentic:~$) where you can type natural language instructions.
+
+
+
+
+
+
+
+
+
+## some basic test cases:
+
+Testing Output Scenarios
+Once the shell prompt (shell@agentic:~$) is active, you can test all system capabilities:
+
+1. Create a File Watch (Primary Use Case)
+Input:
+
+Plaintext
+shell@agentic:~$ watch my downloads folder and automatically move any pdf files to my documents.
+Output & Behavior:
+The router matches the intent, presents a guardrail validation summary, and prompts:Confirm watch creation (y/n)?
+Typing y saves the rule to rules.json, signals the daemon via SIGHUP, and outputs:
+
+Plaintext
+Success: Watch rule_1 created for /home/user/Downloads (*.pdf) -> move.
+2. List Active Watches
+Input:
+
+Plaintext
+shell@agentic:~$ List all active watches
+Output & Behavior:
+Displays all running rules managed in rules.json:
+
+Plaintext
+[rule_1] /home/user/Downloads | *.pdf -> move
+3. Security Guardrail Test (Forbidden System Paths)
+Input:
+
+Plaintext
+shell@agentic:~$ Watch /etc and move files to /bin
+Output & Behavior:
+The validator intercepts forbidden system paths and blocks execution:
+
+Plaintext
+Error: Security violation: Watching system directory '/etc' is forbidden.
+4. Remove an Existing Watch
+Input:
+
+Plaintext
+shell@agentic:~$ Remove rule_1
+Output & Behavior:
+Removes the target rule from rules.json and updates the background daemon:
+
+Plaintext
+Success: Watch rule_1 deleted.
