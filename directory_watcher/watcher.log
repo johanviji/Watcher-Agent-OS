@@ -1,0 +1,4 @@
+2026-10-22 17:11:41,330 [INFO] Watcher Daemon started successfully with PID 521
+2026-10-22 17:11:41,336 [ERROR] Failed to parse rules.json: Expecting value: line 1 column 1 (char 0)
+2026-10-22 17:12:46,834 [INFO] Watcher Daemon started successfully with PID 548
+2026-10-22 17:12:46,841 [ERROR] Failed to parse rules.json: Expecting value: line 1 column 1 (char 0)
