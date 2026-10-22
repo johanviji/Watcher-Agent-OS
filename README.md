@@ -1,128 +1,37 @@
-Agentic Shell for Linux - Directory Watcher Agent (Agent 11)
+# Agentic Shell for Linux – Agent 11: Directory Watcher Agent
 
-An autonomous, multi-agent terminal framework for Linux. This repository implements an intelligent base shell router and a decoupled, domain-specific Directory Watcher Agent (Agent 11) capable of monitoring Linux file-system events in real-time via inotify system calls and performing automated file operations safely.
+This project is part of the **Agentic Shell for Linux** multi-agent system[cite: 1, 2]. **Agent 11 (Directory Watcher Agent)** provides persistent, event-driven file-system monitoring using the Linux `inotify` API. Rather than executing one-off terminal commands, it translates natural language requests into structured, validated watch rules that run as background daemons[cite: 2, 3, 9].
 
-Architecture Overview
+---
 
-The system is designed around a modular, extensible multi-agent architecture capable of scaling to multiple specialized agents (e.g., Process Hunter, Zombie Reaper, CPU Affinity Managers).
+## 🏗️ System Architecture & Design
 
+The system follows a decoupled, multi-tier agentic architecture:
+1. **Interface Layer (Base Shell REPL):** Accepts plain English user input and routes intent[cite: 2].
+2. **Orchestration Layer (Router & Agent):** Dispatches requests to specialized agents (e.g., Agent 11)[cite: 2].
+3. **Tooling Layer (MCP Server):** Exposes validated tools (`watch_directory`, `list_watches`, `remove_watch`).
+4. **Security & Guardrail Framework:** Enforces path safety (`os.path.realpath`), action whitelists (`move`, `copy`, `rename`, `compress`), destructive command blacklisting, and human-in-the-loop confirmation before saving rules[cite: 3, 5].
+5. **Data Path (Watcher Daemon):** A background process utilizing Linux `inotify` via `ctypes` and `select()` multiplexing to apply rules instantly when file events occur[cite: 2, 3].
+
+---
+
+## 📁 Project Directory Structure
+
+```text
 agentic_shell_root/
+│
 ├── base_shell/
 │   ├── __init__.py
 │   └── router.py          # Central Router LLM dispatching requests to agents
 │
 ├── agents/
 │   ├── __init__.py
-│   └── directory_watcher/ # Agent 11 (Modular Domain Agent)
+│   └── directory_watcher/ # Agent 11 Module
 │       ├── __init__.py
 │       ├── validator.py   # Security guardrails & path safety checks
-│       ├── daemon.py      # Background inotify worker process
-│       ├── mcp_server.py  # MCP tools and rule store management
+│       ├── daemon.py      # Background inotify daemon
+│       ├── mcp_server.py  # MCP tools and rule store management[cite: 2, 3]
 │       └── agent.py       # Domain-specific agent logic & request handler
 │
-├── main.py                # Global REPL Shell entry point
-└── requirements.txt       # Dependencies
-
-
-Core Components
-
-Base Shell & Router (base_shell/router.py): Intercepts natural language inputs, identifies intent, and dynamically routes tasks to the responsible specialized agent.
-
-MCP Tooling Layer (agents/directory_watcher/mcp_server.py): Exposes structured capabilities (watch_directory, list_watches, remove_watch) and persists rule configurations.
-
-Real-time Linux Daemon (agents/directory_watcher/daemon.py): A low-level C-library wrapper (libc.so.6) invoking inotify_init1 and inotify_add_watch to monitor file-system events (IN_CLOSE_WRITE, IN_MOVED_TO) with zero poll latency.
-
-Security & Guardrail Validator (agents/directory_watcher/validator.py): Enforces path safety (blocks monitoring/writing to root directories like /etc, /bin, /proc), validates action whitelists, prevents loop conditions, and inspects inputs for destructive shell commands.
-
-Key Features
-
-Natural Language Parsing: Accepts conversational Linux tasks (e.g., "Watch my downloads folder and automatically move any PDF files to my Documents").
-
-Safety Guardrails: Human-in-the-loop confirmation prompts and automated path validation before rule registration.
-
-Low-Overhead Event Monitoring: Utilizes native Linux inotify syscalls rather than CPU-intensive loop polling.
-
-Dynamic Rule Reloading: Inter-process communication (IPC) via SIGHUP signals allowing the background daemon to update rules seamlessly without restarting.
-
-System Requirements
-
-OS: Linux or WSL (Windows Subsystem for Linux - Ubuntu).
-
-Python: Version 3.8+
-
-Linux C Library: libc.so.6 (standard on Debian/Ubuntu environments).
-
-Setup & Installation
-
-1. Install System Dependencies (WSL / Ubuntu)
-
-Ensure python3-pip and Python build tools are installed:
-
-sudo apt update && sudo apt install python3-pip -y
-
-
-2. Install Project Dependencies
-
-Navigate to your project root directory and run:
-
-pip3 install -r requirements.txt
-
-
-How to Run
-
-Running the agent system requires two terminal windows (or two tabs inside WSL):
-
-Terminal 1: Start the Inotify Background Daemon
-
-The daemon runs as a persistent background worker listening for file system events and SIGHUP signals:
-
-python3 -m agents.directory_watcher.daemon
-
-
-Terminal 2: Start the Interactive Base Shell
-
-Launch the main user interface:
-
-python3 main.py
-
-
-Sample Usage & Test Scenarios
-
-Run these commands inside the shell@agentic:~$ interactive prompt:
-
-Scenario 1: Create a Persistent File Watch
-
-shell@agentic:~$ watch my downloads folder and automatically move any pdf files to my documents.
-
-
-Behavior:
-
-The Router identifies the intent and delegates to Agent 11.
-
-The Guardrail validator checks path safety and prints a summary.
-
-Enter y when prompted to confirm.
-
-The rule is written to rules.json and a SIGHUP signal refreshes the daemon.
-
-Scenario 2: List Active Watches
-
-shell@agentic:~$ List all active watches
-
-
-Behavior: Displays all registered file watches, their paths, matching patterns, and corresponding actions.
-
-Scenario 3: Test Security Guardrails (Forbidden System Directory)
-
-shell@agentic:~$ Watch /etc and move files to /bin
-
-
-Behavior: The request is routed to Agent 11, but the security guardrail halts execution and returns:
-Error: Security violation: Watching system directory '/etc' is forbidden.
-
-Scenario 4: Remove a Watch Rule
-
-shell@agentic:~$ Remove rule_1
-
-
-Behavior: Deletes rule_1 from the active configurations and updates the background daemon immediately.
+├── main.py                # Global entry point / Interface Layer (REPL)[cite: 2]
+└── requirements.txt       # Project dependencies[cite: 6]
