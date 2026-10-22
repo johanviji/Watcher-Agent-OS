@@ -1,24 +1,25 @@
 import os
-from directory_watcher.agent import DirectoryWatcherAgent
+from base_shell.router import AgentRouter
 
 def main():
-    agent = DirectoryWatcherAgent()
-    home_dir = os.path.expanduser("~")
+    router = AgentRouter()
     print("==================================================")
-    print(" Agentic Shell for Linux - Directory Watcher Agent")
-    print(" Type your natural language command or 'exit' to quit.")
+    print(" Agentic Shell for Linux - Multi-Agent System    ")
+    print(" Loaded Independent Specialized Agents            ")
     print("==================================================")
 
     while True:
         try:
-            cmd = input("\nshell@agentic:~$ ").strip()
-            if not cmd: 
+            user_input = input("\nshell@agentic:~$ ").strip()
+            if not user_input:
                 continue
-            if cmd.lower() in {"exit", "quit"}: 
-                print("Exiting shell.")
+            if user_input.lower() in {"exit", "quit"}:
+                print("Exiting Agentic Shell. Goodbye!")
                 break
-            response = agent.process_request(cmd, home_dir)
+
+            response = router.route_and_execute(user_input)
             print(response)
+
         except KeyboardInterrupt:
             print("\nExiting...")
             break
