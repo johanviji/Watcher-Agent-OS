@@ -1,3 +1,4 @@
+import re
 from agents.directory_watcher.mcp_server import watch_directory, list_watches, remove_watch
 
 class DirectoryWatcherAgent:
@@ -15,10 +16,23 @@ class DirectoryWatcherAgent:
             wid = next((w for w in user_prompt.split() if w.startswith("rule_")), "rule_1")
             return remove_watch(wid)
 
-        if "download" in p_lower and ("pdf" in p_lower or "move" in p_lower):
-            dl, doc = f"{home_dir}/Downloads", f"{home_dir}/Documents"
-            print(f"\n[Guardrail Summary] Move every *.pdf in {dl} to {doc}.")
-            if input("Confirm watch creation (y/n)? ").strip().lower() == 'y':
-                return watch_directory(path=dl, pattern="*.pdf", action="move", destination=doc)
+        # Dynamic parser for general watch requests (e.g., "Watch /etc and move files to /bin")
+        if "watch" in p_lower:
+            # Extract path after 'watch' and destination after 'to'
+            path_match = re.search(r"watch\s+([^\s]+)", user_prompt, re.IGNORECASE)
+            dest_match = re.search(r"to\s+([^\s]+)", user_prompt, re.IGNORECASE)
+            
+            path = path_match.group(1) if path_match else f"{home_dir}/Downloads"
+            destination = dest_match.group(1) if dest_match else f"{home_dir}/Documents"
+            
+            pattern = "*.pdf" if "pdf" in p_lower else "*"
+            action = "move" if "move" in p_lower else "copy"
+
+            print(f"\n[Guardrail Summary] Action: {action} files matching '{pattern}' from {path} to {destination}.")
+            confirm = input("Confirm watch creation (y/n)? ").strip().lower()
+            
+            if confirm == 'y':
+                return watch_directory(path=path, pattern=pattern, action=action, destination=destination)
             return "Cancelled by user."
+
         return "Directory Watcher Agent received prompt, but requires valid parameters."

@@ -1,6 +1,6 @@
 [
   {
-    "id": "rule_1",
+    "id": "rule_2",
     "path": "/home/neerajk/Downloads",
     "pattern": "*.pdf",
     "action": "move",
@@ -9,7 +9,7 @@
     "active": true
   },
   {
-    "id": "rule_2",
+    "id": "rule_3",
     "path": "/home/neerajk/Downloads",
     "pattern": "*.pdf",
     "action": "move",

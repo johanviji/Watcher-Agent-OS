@@ -14,8 +14,10 @@ class AgentRouter:
         prompt_lower = user_prompt.lower()
         home_dir = os.path.expanduser("~")
 
-        # Intent matching routing logic for Agent 11
-        if any(keyword in prompt_lower for keyword in ["watch", "downloads", "pdf", "file watch", "folder"]):
+        # Broaden intent matching keywords so management commands route correctly to Agent 11
+        directory_keywords = ["watch", "downloads", "pdf", "file watch", "folder", "list", "remove", "rule"]
+
+        if any(keyword in prompt_lower for keyword in directory_keywords):
             selected_agent = self.agents[11]
             print(f"[Router LLM] Intent matched -> Routing to Agent {selected_agent.agent_id}: {selected_agent.name}")
             return selected_agent.handle_request(user_prompt, home_dir)
