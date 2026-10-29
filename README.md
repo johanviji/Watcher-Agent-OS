@@ -1,4 +1,4 @@
-# Agentic Shell for Linux – Agent 11: Directory Watcher Agent
+# Agentic Shell for Linux – Agent 11: Directory Watcher Agent by Johan and Neeraj
 
 This project is part of the **Agentic Shell for Linux** multi-agent system[cite: 1, 2]. **Agent 11 (Directory Watcher Agent)** provides persistent, event-driven file-system monitoring using the Linux `inotify` API. Rather than executing one-off terminal commands, it translates natural language requests into structured, validated watch rules that run as background daemons[cite: 2, 3, 9].
 
